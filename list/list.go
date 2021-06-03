@@ -73,6 +73,45 @@ func reverseBetween(head *ListNode, left int, right int) *ListNode {
 	return result.Next
 }
 
+// time: O(n + m), space: O(n + m)
+func mergeTwoListsRecurr(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	} else if l2 == nil {
+		return l1
+	} else if l1.Val < l2.Val {
+		l1.Next = mergeTwoListsRecurr(l1.Next, l2)
+		return l1
+	} else {
+		l2.Next = mergeTwoListsRecurr(l1, l2.Next)
+		return l2
+	}
+}
+
+// Time: O(n+m), Space: O(1)
+func mergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
+	var preHead = &ListNode{-1, nil}
+	prev := preHead
+
+	for l1 != nil && l2 != nil {
+		if l1.Val <= l2.Val {
+			prev.Next = l1
+			l1 = l1.Next
+		} else {
+			prev.Next = l2
+			l2 = l2.Next
+		}
+		prev = prev.Next
+	}
+
+	if l1 == nil {
+		prev.Next = l2
+	} else {
+		prev.Next = l1
+	}
+	return preHead.Next
+}
+
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 	//Edge case
 	if l1 == nil {
@@ -112,7 +151,71 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 		prevNode = prevNode.Next
 
 	}
-
 	return result
+}
 
+func plusOne(head *ListNode) *ListNode {
+	var dummyhead = &ListNode{}
+	dummyhead.Next = head
+	notNine := dummyhead
+	for head != nil {
+		if head.Val != 9 {
+			notNine = head
+		}
+		head = head.Next
+	}
+	notNine.Val++
+	notNine = notNine.Next
+	for notNine != nil {
+		notNine.Val = 0
+		notNine = notNine.Next
+	}
+
+	if dummyhead.Val != 0 {
+		return dummyhead
+	} else {
+		return dummyhead.Next
+	}
+}
+
+// T: O(n1 + n2)
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	l1 = reverseList(l1)
+	l2 = reverseList(l2)
+
+	var head *ListNode
+	carry := 0
+	for l1 != nil || l2 != nil {
+		// get the current values
+		x1, x2 := 0, 0
+		if l1 != nil {
+			x1 = l1.Val
+		}
+		if l2 != nil {
+			x2 = l2.Val
+		}
+
+		// current sum and carry
+		val := (carry + x1 + x2) % 10
+		carry = (carry + x1 + x2) / 10
+
+		// update the result: add to front
+		curr := &ListNode{val, nil}
+		curr.Next = head
+		head = curr
+
+		if l1 != nil {
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			l2 = l2.Next
+		}
+	}
+
+	if carry != 0 {
+		curr := &ListNode{carry, nil}
+		curr.Next = head
+		head = curr
+	}
+	return head
 }
